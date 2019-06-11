@@ -1,25 +1,41 @@
 import React from 'react';
 import logo from './logo.svg';
+// Styling
 import './App.css';
+import { makeStyles } from '@material-ui/core/styles'
+import { BrowserRouter, Route } from 'react-router-dom'
+import 'bootstrap/dist/css/bootstrap.css';
+import LandingPage from './component/LandingPage/LandingPage';
+import TodoApplication from './component/TodoApplication/TodoApplication';
+import NavigationBar from './component/NavigationBar/NavigationBar';
+// Components 
+
+
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+  },
+  input: {
+    backgroundColor : "white",
+    borderColor :"pink",
+    borderWidth: "2px",
+  },
+}));
 
 function App() {
+  const classes = useStyles();
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <BrowserRouter>
+      <div>
+        <Route exact  path='/' component={LandingPage} />
+        <Route exact path='/todoapplication' component={TodoApplication} />
+        <Route exact path='/navbar' component={NavigationBar} />
+        
+      </div>
+    </BrowserRouter>
   );
 }
 
