@@ -1,41 +1,44 @@
 import React, { Component } from 'react'
 import 'bootstrap/dist/css/bootstrap.css';
+import 'bootstrap/dist/js/bootstrap.js';
+
 import Card from 'react-bootstrap/Card'
-import InputGroup from 'react-bootstrap/InputGroup'
-import FormControl from 'react-bootstrap/FormControl'
+// import InputGroup from 'react-bootstrap/InputGroup'
+// import FormControl from 'react-bootstrap/FormControl'
 import Form from 'react-bootstrap/Form'
-import Container from 'react-bootstrap/Container'
-import Row from 'react-bootstrap/Row'
-import Col from 'react-bootstrap/Col'
+// import Container from 'react-bootstrap/Container'
+// import Row from 'react-bootstrap/Row'
+// import Col from 'react-bootstrap/Col'
 import { Button } from 'react-bootstrap';
 import { ListGroup } from 'react-bootstrap';
-
+import ModalFooter from 'react-bootstrap/ModalFooter'
+import ModalBody from 'react-bootstrap/ModalBody'
+import ModalTitle from 'react-bootstrap/ModalTitle'
+import ModalHeader from 'react-bootstrap/ModalHeader'
+import ModalDialog from 'react-bootstrap/ModalDialog'
+import Modal from 'react-bootstrap/Modal'
+import TodoItem from '../TodoItem/TodoItem';
 
 export default class TodoListInput extends Component {
 
-    constructor(props) {
-        super(props);
+    constructor(props, context) {
+        super(props, context);
         this.state = {
             inputValue: '',
-            newArray : []
+            newArray: [],
+            show: [],
         };
     }
 
-    updateInputValue(evt) {
-        this.setState({
-            inputValue: evt.target.value
-        });
-    }
-    // componentDidUpdate() {
-    //     console.log("Upfdate " , this.state.newArray);
-    // }
-
-    componentDidUpdate() {
+    componentDidMount() {
         fetch("https://nodedatastore.herokuapp.com/syedumerhasan")
         .then(res => res.json())
         .then(
             (result) => {
                 console.log(result);
+                this.setState({
+                    newArray: result.newArray
+                })
             },
             // Note: it's important to handle errors here
             // instead of a catch() block so that we don't swallow
@@ -67,9 +70,43 @@ export default class TodoListInput extends Component {
         alert(this.state.newArray);
         evt.preventDefault();
     }
+    updatedata = (inputValue, datakey) => {
+        console.log("inputValue :  ", inputValue)
+        console.log("datakey    :  ", datakey)
+
+        this.state.newArray[datakey] = inputValue;
+        this.setState({
+            newArray: this.state.newArray
+        })
+        fetch('https://nodedatastore.herokuapp.com/syedumerhasan', {
+            method: 'post',
+            headers: {'Content-Type':'application/json'},
+            body: JSON.stringify({
+                "newArray": this.state.newArray
+            })
+        });
+    }
+    deletedata = (key) => {
+        // this.state.newArray[key];
+
+       let arr = [];
+         this.state.newArray.map((v,i)=> {
+if (key !== i) {
+    arr.push(v)
+}
+         })
+        this.setState({
+            newArray: arr
+        })
+
+        console.log('====================================');
+        console.log(this.state.newArray);
+        console.log('====================================');
+        
+
+    }
      
     render() {
-      console.log(this.state.inputValue)
         return (
             <div>
                 <div style={{ width: '80%', margin: 'auto', marginTop: '50px', }}>
@@ -90,27 +127,21 @@ export default class TodoListInput extends Component {
                             Add your To-Do List
                         </Card.Title>
                         <Card.Text>
-
                             Now you can add To-DO List using this Web Application.  
-                            <ListGroup>
                             {
-                                this.state.newArray.map(function(item, key) {
-                                return (
-                                    <ListGroup.Item contentEditable={true} onChange={function(e){
-                                        console.log("I am chnaging");
-                                    }} key={key}>{item}</ListGroup.Item>
-                                    )     
+                                this.state.newArray.map((item, key) =>{
+                                    return (
+                                        <TodoItem value={item} datakey={key} updatedata={this.updatedata} deletedata={this.deletedata} />
+                                    );
                                 })
                             }
-                            
-                            </ListGroup>
                         </Card.Text>
                     </Card.Body>
-                    
-                    <Card.Footer className="text-muted">2 days ago</Card.Footer>
-                </Card>
+                    </Card>
             </div>
         );
     }
+
+
 }
 
